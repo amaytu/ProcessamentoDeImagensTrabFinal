@@ -39,9 +39,9 @@ def calculate_angle(a: np.ndarray, b: np.ndarray, c: np.ndarray) -> float:
     ba = a - b
     bc = c - b
 
-    # Produto vetorial 2D (componente z): |BA||BC|sin(θ)
+                                                        
     cross = ba[0] * bc[1] - ba[1] * bc[0]
-    # Produto escalar: |BA||BC|cos(θ)
+                                     
     dot = np.dot(ba[:2], bc[:2])
 
     angle_rad = np.abs(np.arctan2(cross, dot))

@@ -34,7 +34,7 @@ from exercise_analyzer import ExerciseAnalyzer
 from hud_renderer import draw_hud
 
 
-# ── Landmark indices por braço ──────────────────────────────────────────────
+                                                                              
 ARM_LANDMARKS = {
     "right": {
         "shoulder": PoseLandmark.RIGHT_SHOULDER,
@@ -48,11 +48,11 @@ ARM_LANDMARKS = {
     },
 }
 
-# ── Configurações de captura ────────────────────────────────────────────────
+                                                                              
 CAPTURE_WIDTH = 1280
 CAPTURE_HEIGHT = 720
 
-# ── Caminho do modelo ───────────────────────────────────────────────────────
+                                                                              
 MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "pose_landmarker_lite.task")
 
 
@@ -99,19 +99,19 @@ def create_capture(source: str) -> cv2.VideoCapture:
 def main() -> None:
     args = parse_args()
 
-    # ── Validar modelo ──────────────────────────────────────────────────────
+                                                                              
     if not os.path.isfile(MODEL_PATH):
         print(f"[ERRO] Modelo nao encontrado: {MODEL_PATH}")
         print("[INFO] Baixe de: https://storage.googleapis.com/mediapipe-models/"
               "pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task")
         sys.exit(1)
 
-    # ── Inicialização ───────────────────────────────────────────────────────
+                                                                              
     cap = create_capture(args.source)
     analyzer = ExerciseAnalyzer()
     landmarks_cfg = ARM_LANDMARKS[args.arm]
 
-    # Configurar PoseLandmarker (Task API — VIDEO mode para arquivos, IMAGE para frames)
+                                                                                        
     options = PoseLandmarkerOptions(
         base_options=BaseOptions(model_asset_path=MODEL_PATH),
         running_mode=RunningMode.VIDEO,
@@ -121,7 +121,7 @@ def main() -> None:
     )
     landmarker = PoseLandmarker.create_from_options(options)
 
-    # ── Variáveis de controle ───────────────────────────────────────────────
+                                                                              
     frame_count = 0
     prev_time = time.perf_counter()
     fps = 0.0
@@ -134,7 +134,7 @@ def main() -> None:
     print(f"[INFO] Braco: {'Direito' if args.arm == 'right' else 'Esquerdo'}")
     print(f"[INFO] Pressione 'q' para sair, 'r' para resetar contagem.")
 
-    # ── Loop principal ──────────────────────────────────────────────────────
+                                                                              
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -144,34 +144,34 @@ def main() -> None:
             continue
 
         frame_count += 1
-        timestamp_ms += 33  # ~30fps incremento monotônico
+        timestamp_ms += 33                                
 
-        # Flip horizontal para webcam (efeito espelho)
+                                                      
         if args.source == "0":
             frame = cv2.flip(frame, 1)
 
         h, w = frame.shape[:2]
 
-        # ── MediaPipe PoseLandmarker ────────────────────────────────────────
+                                                                              
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
         results = landmarker.detect_for_video(mp_image, timestamp_ms)
 
         if results.pose_landmarks and len(results.pose_landmarks) > 0:
-            lm = results.pose_landmarks[0]  # primeira pessoa detectada
+            lm = results.pose_landmarks[0]                             
 
-            # Extrair coordenadas em pixels
+                                           
             shoulder = extract_landmark_coords(lm, landmarks_cfg["shoulder"], w, h)
             elbow = extract_landmark_coords(lm, landmarks_cfg["elbow"], w, h)
             wrist = extract_landmark_coords(lm, landmarks_cfg["wrist"], w, h)
 
-            # Cálculo biomecânico
+                                 
             angle = calculate_angle(shoulder, elbow, wrist)
 
-            # Análise de exercício (máquina de estados)
+                                                       
             analysis = analyzer.update(angle)
 
-            # Renderização do HUD
+                                 
             draw_hud(frame, shoulder, elbow, wrist, analysis, fps, frame_count)
         else:
             cv2.putText(
@@ -180,13 +180,13 @@ def main() -> None:
                 cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2, cv2.LINE_AA,
             )
 
-        # ── FPS ─────────────────────────────────────────────────────────────
+                                                                              
         now = time.perf_counter()
         dt = now - prev_time
         prev_time = now
         fps = 1.0 / dt if dt > 0 else 0.0
 
-        # ── Exibição ────────────────────────────────────────────────────────
+                                                                              
         cv2.imshow(window_name, frame)
 
         key = cv2.waitKey(1) & 0xFF
@@ -196,7 +196,7 @@ def main() -> None:
             analyzer.reset()
             print("[INFO] Contagem resetada.")
 
-    # ── Cleanup ─────────────────────────────────────────────────────────────
+                                                                              
     cap.release()
     cv2.destroyAllWindows()
     landmarker.close()

@@ -10,7 +10,7 @@ from __future__ import annotations
 import cv2
 import numpy as np
 
-# Paleta de cores (BGR)
+                       
 COLORS = {
     "joint": (0, 255, 255),
     "bone": (255, 200, 50),

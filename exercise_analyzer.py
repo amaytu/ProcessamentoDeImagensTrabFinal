@@ -35,7 +35,7 @@ class ExerciseAnalyzer:
         permanece ativo após ser disparado (default 45 ≈ 1.5s @30fps).
     """
 
-    # ----- Estados válidos --------------------------------------------------
+                                                                              
     STATE_IDLE = "IDLE"
     STATE_ECCENTRIC = "ECCENTRIC"
     STATE_CONCENTRIC = "CONCENTRIC"
@@ -47,24 +47,24 @@ class ExerciseAnalyzer:
         cheat_threshold: float = 150.0,
         alert_hold_frames: int = 45,
     ) -> None:
-        # Thresholds
+                    
         self.concentric_threshold = concentric_threshold
         self.eccentric_threshold = eccentric_threshold
         self.cheat_threshold = cheat_threshold
         self.alert_hold_frames = alert_hold_frames
 
-        # Estado interno
+                        
         self.state: str = self.STATE_IDLE
         self.reps: int = 0
         self.phase_label: str = "—"
         self.amplitude_alert: bool = False
 
-        # Rastreamento de amplitude máxima durante a fase excêntrica
+                                                                    
         self._max_angle_in_eccentric: float = 0.0
-        # Contador regressivo para manter o alerta visível
+                                                          
         self._alert_countdown: int = 0
 
-    # ----- API pública -------------------------------------------------------
+                                                                               
 
     def update(self, angle: float) -> dict:
         """Atualiza a máquina de estados com o ângulo articular atual.
@@ -110,7 +110,7 @@ class ExerciseAnalyzer:
             alert_hold_frames=self.alert_hold_frames,
         )
 
-    # ----- Handlers de estado ------------------------------------------------
+                                                                               
 
     def _handle_idle(self, angle: float) -> None:
         """IDLE → ECCENTRIC quando o braço atinge extensão completa."""
@@ -124,12 +124,12 @@ class ExerciseAnalyzer:
 
         Rastreia o ângulo máximo atingido nesta fase para detecção de cheat.
         """
-        # Atualiza pico de extensão
+                                   
         if angle > self._max_angle_in_eccentric:
             self._max_angle_in_eccentric = angle
 
         if angle <= self.concentric_threshold:
-            # Verifica se houve amplitude suficiente antes da contração
+                                                                       
             if self._max_angle_in_eccentric < self.cheat_threshold:
                 self._fire_alert()
 
@@ -144,7 +144,7 @@ class ExerciseAnalyzer:
             self.phase_label = "DESCENDO ↓"
             self._max_angle_in_eccentric = angle
 
-    # ----- Alerta de amplitude encurtada ------------------------------------
+                                                                              
 
     def _fire_alert(self) -> None:
         """Dispara o alerta de amplitude encurtada."""
