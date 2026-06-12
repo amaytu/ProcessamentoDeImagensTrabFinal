@@ -87,10 +87,8 @@ python src/tests.py
 
 O relatório científico do trabalho final está disponível em [`relatorio/relatorio.md`](relatorio/relatorio.md).
 
-## Autores
+## Autor
 
-- Gabriel [Sobrenome]
-- [Membro 2]
-- [Membro 3]
+- Gabriel Jorge Utyama
 
 **Disciplina:** Processamento de Imagens — FURB — Prof. Aurélio Hoppe — 2026/1
