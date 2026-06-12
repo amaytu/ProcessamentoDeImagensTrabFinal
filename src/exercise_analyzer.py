@@ -10,32 +10,7 @@ from __future__ import annotations
 
 
 class ExerciseAnalyzer:
-    """Máquina de estados para contagem e validação de repetições.
-
-    Estados
-    -------
-    IDLE        : Aguardando primeira extensão completa do braço.
-    ECCENTRIC   : Braço estendido (fase de alongamento / descida).
-    CONCENTRIC  : Braço flexionado (fase de contração / subida).
-
-    Uma repetição é contada quando o ciclo ECCENTRIC → CONCENTRIC → ECCENTRIC
-    se completa, garantindo amplitude total para máxima tensão mecânica.
-
-    Parameters
-    ----------
-    concentric_threshold : float
-        Ângulo máximo para considerar contração completa (default 40°).
-    eccentric_threshold : float
-        Ângulo mínimo para considerar extensão completa (default 160°).
-    cheat_threshold : float
-        Ângulo mínimo que a extensão deveria ter atingido para não
-        configurar amplitude encurtada / "roubo" (default 150°).
-    alert_hold_frames : int
-        Número de frames que o alerta visual de amplitude encurtada
-        permanece ativo após ser disparado (default 45 ≈ 1.5s @30fps).
-    """
-
-                                                                              
+                                                       
     STATE_IDLE = "IDLE"
     STATE_ECCENTRIC = "ECCENTRIC"
     STATE_CONCENTRIC = "CONCENTRIC"
@@ -67,23 +42,6 @@ class ExerciseAnalyzer:
                                                                                
 
     def update(self, angle: float) -> dict:
-        """Atualiza a máquina de estados com o ângulo articular atual.
-
-        Parameters
-        ----------
-        angle : float
-            Ângulo atual do cotovelo em graus [0, 180].
-
-        Returns
-        -------
-        dict
-            Snapshot do estado contendo:
-            - ``state``           : str   — estado atual da máquina
-            - ``reps``            : int   — total de repetições validadas
-            - ``phase_label``     : str   — rótulo legível ("SUBINDO ↑" / "DESCENDO ↓")
-            - ``amplitude_alert`` : bool  — se o alerta de amplitude está ativo
-            - ``angle``           : float — eco do ângulo recebido
-        """
         self._tick_alert()
 
         if self.state == self.STATE_IDLE:
@@ -120,10 +78,6 @@ class ExerciseAnalyzer:
             self._max_angle_in_eccentric = angle
 
     def _handle_eccentric(self, angle: float) -> None:
-        """ECCENTRIC → CONCENTRIC quando o braço atinge contração.
-
-        Rastreia o ângulo máximo atingido nesta fase para detecção de cheat.
-        """
                                    
         if angle > self._max_angle_in_eccentric:
             self._max_angle_in_eccentric = angle
@@ -137,7 +91,6 @@ class ExerciseAnalyzer:
             self.phase_label = "SUBINDO ↑"
 
     def _handle_concentric(self, angle: float) -> None:
-        """CONCENTRIC → ECCENTRIC quando o braço retorna à extensão → rep++."""
         if angle >= self.eccentric_threshold:
             self.reps += 1
             self.state = self.STATE_ECCENTRIC

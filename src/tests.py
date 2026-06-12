@@ -1,17 +1,9 @@
-"""
-tests.py — Testes unitários para biomechanics e exercise_analyzer.
-
-Execução:
-    python tests.py
-"""
-
 import numpy as np
 from biomechanics import calculate_angle
 from exercise_analyzer import ExerciseAnalyzer
 
 
 def test_calculate_angle():
-    """Valida calculate_angle com triângulos conhecidos."""
     print("=== Testes de calculate_angle ===\n")
 
                                         

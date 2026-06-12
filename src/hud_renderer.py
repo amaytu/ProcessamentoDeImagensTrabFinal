@@ -1,11 +1,3 @@
-"""
-hud_renderer.py — Renderização do HUD e esqueleto sobre o frame.
-
-Responsável por todo desenho visual: skeleton overlay nos braços,
-exibição de ângulo, contador de repetições, fase atual, barra de
-progresso com cor dinâmica e banner de alerta de amplitude encurtada.
-"""
-
 from __future__ import annotations
 import cv2
 import numpy as np
